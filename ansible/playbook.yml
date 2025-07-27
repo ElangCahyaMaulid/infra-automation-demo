@@ -1,0 +1,7 @@
+- name: Configure local app with Docker
+  hosts: app
+  become: true
+  roles:
+    - docker
+    - app-deploy
+    - monitoring

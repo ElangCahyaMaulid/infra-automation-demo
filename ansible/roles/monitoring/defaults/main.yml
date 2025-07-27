@@ -1,0 +1,2 @@
+prometheus_scrape_interval: 15s
+grafana_port: 3002

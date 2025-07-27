@@ -1,0 +1,36 @@
+---
+- name: Salin konfigurasi Prometheus
+  template:
+    src: prometheus.yml.j2
+    dest: /home/elangmaulid35/projects/infra-automation-demo/docker/monitoring/prometheus.yml
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Salin docker-compose khusus monitoring
+  template:
+    src: docker-compose-monitoring.yml.j2
+    dest: /home/elangmaulid35/projects/infra-automation-demo/docker/docker-compose.yml
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Jalankan docker compose up
+  command: docker compose -f /home/elangmaulid35/projects/infra-automation-demo/docker/docker-compose.yml up -d
+  args:
+    chdir: /home/elangmaulid35/projects/infra-automation-demo/docker/
+
+- name: Copy Kubernetes YAML manifests
+  copy:
+    src: kube-yaml/
+    dest: /tmp/kube-yaml/
+    mode: '0755'
+  notify: Deploy monitoring stack
+
+- name: Deploy monitoring stack
+  kubernetes.core.k8s:
+    state: present
+    src: "/tmp/kube-yaml/"
+    namespace: monitoring
+  with_fileglob: "/tmp/kube-yaml/*.yaml"
+

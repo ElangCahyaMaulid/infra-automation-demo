@@ -1,0 +1,17 @@
+- name: Copy Dockerfile
+  copy:
+    src: "{{ playbook_dir }}/../docker/Dockerfile"
+    dest: "{{ ansible_env.HOME }}/Dockerfile"
+
+- name: Copy Docker Compose file
+  copy:
+    src: "{{ playbook_dir }}/../docker/docker-compose.yml"
+    dest: "{{ ansible_env.HOME }}/docker-compose.yml"
+
+- name: Copy App Folder
+  copy:
+    src: "{{ playbook_dir }}/../docker/app"
+    dest: "{{ ansible_env.HOME }}/app"
+    mode: preserve
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
