@@ -1,29 +1,17 @@
 const express = require('express');
-const { Client } = require('pg');
+const client = require('prom-client');
 
 const app = express();
-const PORT = 3000;
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics();
 
-const db = new Client({
-  host: 'db',
-  user: 'user',
-  password: 'pass',
-  database: 'appdb'
+const register = client.register;
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
 });
 
-db.connect()
-  .then(() => console.log('Connected to DB'))
-  .catch((err) => console.error('DB connection error:', err.message));
-
-app.get('/', async (req, res) => {
-  try {
-    const result = await db.query('SELECT NOW()');
-    res.send(`Hello from Node.js! DB time: ${result.rows[0].now}`);
-  } catch (err) {
-    res.status(500).send(`Error: ${err.message}`);
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`App running on port ${PORT}`);
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
 });
