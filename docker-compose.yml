@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    build: ./docker/app
+    container_name: infra-demo-app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./docker/app:/app
+    working_dir: /app
+    command: npm start
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    container_name: infra-demo-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/db_data:/var/lib/postgresql/data

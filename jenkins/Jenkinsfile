@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    environment {
+        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-secret'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ElangCahyaMaulid/infra-automation-demo.git'
+            }
+        }
+
+        stage('Deploy Monitoring Stack to Kubernetes') {
+            steps {
+                withCredentials([file(credentialsId: env.KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG')]) {
+                    sh '''
+                        echo "Using KUBECONFIG at $KUBECONFIG"
+                        export KUBECONFIG=$KUBECONFIG
+                        kubectl apply -f kubernetes/
+                    '''
+                }
+            }
+        }
+    }
+}
